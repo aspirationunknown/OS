@@ -1,6 +1,6 @@
 /* File: commands.cpp
  * Author: Charles Parsons
- * Date: 2/6/2015
+ * Date: 2/21/2015
  * 
  * Description: This file holds all of the functions for interpreting commands
  * and executing commands.
@@ -12,6 +12,21 @@
  * function.*/
 void interpretCommand(std::string cmd)
 {
+    int pid;
+    
+    //try parsing cmd using strtok function to get command and arguments
+    //separated.
+    
+    pid = fork();
+    //fork returns 0 in the child process and the pid of the child process
+    //in the parent process.
+    if(pid == 0)
+    {
+        //have child process perform command using cmd string
+        //redirect child process's I/O to parent process
+        
+    }
+    /*
     std::string command = "";
     std::size_t index;
     bool is_single_command = false;
@@ -73,6 +88,7 @@ void interpretCommand(std::string cmd)
     {
         errorMessage();
     }
+    */
     
 }
 

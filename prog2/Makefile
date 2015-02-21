@@ -31,4 +31,4 @@ dash:	dash.cpp commands.cpp commands.h
 
 # utility targets
 clean:
-	rm -f *.o *~ core
+	rm -f *.o *~ dash

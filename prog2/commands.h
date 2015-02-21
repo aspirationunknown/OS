@@ -1,6 +1,6 @@
 /* File: commands.h
  * Author: Charles Parsons
- * Date: 2/6/2015
+ * Date: 2/21/2015
  * 
  * Description: This header file is for commands.cpp.
  * 
@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <unistd.h>
 
 void commandName(int pid);
 void errorMessage();

@@ -13,17 +13,23 @@
 void interpretCommand(std::string cmd)
 {
     int pid;
+    char* command[100];
     
     //try parsing cmd using strtok function to get command and arguments
     //separated.
+    parseCommand(cmd, command);
+    
+    std::cout << *command[0] << std::endl;
     
     pid = fork();
     //fork returns 0 in the child process and the pid of the child process
     //in the parent process.
     if(pid == 0)
     {
+        execv(command[0], command);
         //have child process perform command using cmd string
         //redirect child process's I/O to parent process
+        exit(0);
         
     }
     /*
@@ -183,5 +189,33 @@ std::string itoa(int num)
     temp = ss.str();
     
     return temp;
+}
+
+/*Parse the command line string cmd and place into null terminated
+ * strings.*/
+void parseCommand(std::string source, char* destination[100])
+{
+    int i, index, size;
+    char temp[256];
+    index = 0;
+    size = int(source.length());
+    
+    //copy the string into a character array
+    for(i = 0; i < size; ++i)
+    {
+        temp[i] = source[i];
+    }
+    //null terminate the character array
+    temp[size] = '\0';
+    //use strtok to parse the character array
+    destination[index] = strtok(temp, " ");
+    
+    while(destination[index] != NULL)
+    {
+        ++index;
+        destination[index] = strtok(NULL, " ");
+    }
+    
+
 }
 

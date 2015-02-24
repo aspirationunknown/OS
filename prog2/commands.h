@@ -6,6 +6,7 @@
  * 
  */
 
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -16,6 +17,7 @@ void commandName(int pid);
 void errorMessage();
 void interpretCommand(std::string cmd);
 std::string itoa(int num);
+void parseCommand(std::string source, char* destination[100]);
 void procIds(std::string cmd);
 void systemStats();
 

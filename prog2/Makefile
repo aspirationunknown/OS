@@ -15,7 +15,7 @@ LINK = g++
 # Turn on optimization and warnings (add -g for debugging with gdb):
 # CPPFLAGS = 		# preprocessor flags
 CFLAGS = -O -Wall
-CXXFLAGS = -O -Wall -std=c++11
+CXXFLAGS = -O -Wall -std=c++11 -g
 
 
 #-----------------------------------------------------------------------

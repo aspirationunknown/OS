@@ -12,62 +12,46 @@
  * function.*/
 void interpretCommand(std::string cmd)
 {
-    int pid;
-    char* command[100];
-    
-    //try parsing cmd using strtok function to get command and arguments
-    //separated.
-    parseCommand(cmd, command);
-    
-    std::cout << *command[0] << std::endl;
-    
-    pid = fork();
-    //fork returns 0 in the child process and the pid of the child process
-    //in the parent process.
-    if(pid == 0)
-    {
-        execv(command[0], command);
-        //have child process perform command using cmd string
-        //redirect child process's I/O to parent process
-        exit(0);
-        
-    }
-    /*
+    int i, pos, size, status;
+    char* exec_command[100];
+    char temp[256];    
     std::string command = "";
     std::size_t index;
     bool is_single_command = false;
     int pid = 0;
+    rusage time_usage;
+    std::string temp_cmd = cmd;
     
     //parse command
     index = cmd.find_first_of(" \t");
     
     if(index != std::string::npos)
     {
-        command = cmd.substr(0, index);
-        cmd = cmd.substr(index + 1);
+        command = temp_cmd.substr(0, index);
+        temp_cmd = temp_cmd.substr(index + 1);
     }
     else
     {
-        command = cmd;
+        command = temp_cmd;
         is_single_command = true;
     }
     
     //check for cmdnm <pid> command
     if(is_single_command == false && command == "cmdnm")
     {
-        index = cmd.find_first_of(" \t");
-        if(index == std::string::npos && isdigit(cmd[0]))
+        index = temp_cmd.find_first_of(" \t");
+        if(index == std::string::npos && isdigit(temp_cmd[0]))
         {
             //get pid number
-            pid = atoi(cmd.c_str());
+            pid = atoi(temp_cmd.c_str());
         }
         else
         {
-            cmd = cmd.substr(0, index);
-            if(isdigit(cmd[0]))
+            temp_cmd = temp_cmd.substr(0, index);
+            if(isdigit(temp_cmd[0]))
             {
                 //get pid number
-                pid = atoi(cmd.c_str());
+                pid = atoi(temp_cmd.c_str());
             }
             else
             {
@@ -89,12 +73,59 @@ void interpretCommand(std::string cmd)
     {
         systemStats();
     }
-    //handle all other errors
-    else
+    else if(command == "cd")
     {
-        errorMessage();
+        //use chdir to change directory
+        chdir(temp_cmd.c_str());
+        return;
     }
-    */
+
+    
+    //try parsing cmd using strtok function to get command and arguments
+    //separated.
+    //parseCommand(cmd, command);    
+    pos = 0;
+    size = int(cmd.length());
+    
+    //copy the string into a character array
+    for(i = 0; i < size; ++i)
+    {
+        temp[i] = cmd[i];
+    }
+    //null terminate the character array
+    temp[size] = '\0';
+    //use strtok to parse the character array
+    exec_command[pos] = strtok(temp, " ");
+    
+    while(exec_command[pos] != NULL)
+    {
+        ++pos;
+        exec_command[pos] = strtok(NULL, " ");
+    }
+    
+    pid = fork();
+    //fork returns 0 in the child process and the pid of the child process
+    //in the parent process.
+    if(pid == 0)
+    {
+        execvp(exec_command[0], exec_command);
+        //have child process perform command using cmd string
+        //redirect child process's I/O to parent process
+        exit(0);
+        
+    }
+
+    wait(&status);
+/***********************************************************************
+* Code listing from "Advanced Linux Programming," by CodeSourcery LLC  *
+* Copyright (C) 2001 by New Riders Publishing                          *
+* See COPYRIGHT for license information.                               *
+***********************************************************************/
+    getrusage(RUSAGE_SELF, &time_usage);
+      printf ("CPU time: %ld.%06ld sec user, %ld.%06ld sec system\n",
+          time_usage.ru_utime.tv_sec, time_usage.ru_utime.tv_usec,
+          time_usage.ru_stime.tv_sec, time_usage.ru_stime.tv_usec);
+/**********************************************************************/
     
 }
 
@@ -193,6 +224,7 @@ std::string itoa(int num)
 
 /*Parse the command line string cmd and place into null terminated
  * strings.*/
+/*
 void parseCommand(std::string source, char* destination[100])
 {
     int i, index, size;
@@ -210,6 +242,8 @@ void parseCommand(std::string source, char* destination[100])
     //use strtok to parse the character array
     destination[index] = strtok(temp, " ");
     
+    std::cout << destination[0] << std::endl;
+    
     while(destination[index] != NULL)
     {
         ++index;
@@ -218,4 +252,4 @@ void parseCommand(std::string source, char* destination[100])
     
 
 }
-
+*/

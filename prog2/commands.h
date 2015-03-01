@@ -6,7 +6,9 @@
  * 
  */
 
+#include <cstdlib>
 #include <cstring>
+#include <fcntl.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -21,6 +23,8 @@ void errorMessage();
 void interpretCommand(std::string cmd);
 std::string itoa(int num);
 //void parseCommand(std::string source, char* destination[100]);
+void parsePipedCommand(std::string cmd, std::string &input, std::string &output);
+void pipedCommand(std::string cmd);
 void procIds(std::string cmd);
 void systemStats();
 

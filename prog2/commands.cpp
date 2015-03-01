@@ -12,7 +12,7 @@
  * function.*/
 void interpretCommand(std::string cmd)
 {
-    int i, pos, size, status;
+    int i, pos, size, status, success;
     char* exec_command[100];
     char temp[256];    
     std::string command = "";
@@ -21,6 +21,13 @@ void interpretCommand(std::string cmd)
     int pid = 0;
     rusage time_usage;
     std::string temp_cmd = cmd;
+    
+    index = cmd.find_first_of("|");
+    if(index != std::string::npos)
+    {
+        pipedCommand(cmd);
+        return;
+    }
     
     //parse command
     index = cmd.find_first_of(" \t");
@@ -62,21 +69,28 @@ void interpretCommand(std::string cmd)
         }
         
         commandName(pid);
+        return;
     }
     //check for pid <command>
     else if(is_single_command == false && command == "pid")
     {
-        
+        std::cout << "This function has not been implemented." << std::endl;
+        return;
     }
     //check for systat
     else if(is_single_command == true && command == "systat")
     {
         systemStats();
+        return;
     }
     else if(command == "cd")
     {
         //use chdir to change directory
-        chdir(temp_cmd.c_str());
+        success = chdir(temp_cmd.c_str());
+        if(success != 0)
+        {
+            std::cout << temp_cmd << " is an invalid directory." << std::endl;
+        }
         return;
     }
 
@@ -222,8 +236,98 @@ std::string itoa(int num)
     return temp;
 }
 
+/*Handle command with piping.*/
+void pipedCommand(std::string cmd)
+{
+////////////////////////////////////////////////////////////////////
+//                     Pipe example program                       //
+//                                                                //
+//   Just an example, but think about the question of whether     //
+//   child or grandchild should be input of pipe or should both   //
+//   be children of same parent?                                  //
+////////////////////////////////////////////////////////////////////
+    char* exec_command[100];
+    int fd_pipe[2];
+    int index = 0;
+    int pid1;
+    int pid2;
+    int status;
+    int wpid;
+    std::string input_command, output_command;
+    parsePipedCommand(cmd, input_command, output_command);
+
+    pid1 = fork();
+    if (pid1 == 0)
+    {
+        //used an idea from Martin Dimitrov's comment on 
+        //http://stackoverflow.com/questions/289347/using-strtok-with-a-stdstring
+        exec_command[index] = strtok(&input_command[0]," ");
+        while(exec_command[index] != NULL)
+        {
+            ++index;
+            exec_command[index] = strtok(NULL, " ");
+        }
+        
+    // child process executes here for input side of pipe
+
+        pipe(fd_pipe);           // create pipe
+
+        pid2 = fork();
+        if (pid2 == 0)
+        {
+            // grandchild process executes here for output side of pipe
+            close(1);              // close standard output
+            dup(fd_pipe[1]);       // redirect the output
+            close(fd_pipe[0]);     // close unnecessary file descriptor
+            close(fd_pipe[1]);     // close unnecessary file descriptor
+            execvp(exec_command[0], exec_command);
+            exit(1);
+        }
+
+        // back to process for input side of pipe
+
+        close(0);              // close standard input
+        dup(fd_pipe[0]);       // redirect the input
+        close(fd_pipe[0]);     // close unnecessary file descriptor
+        close(fd_pipe[1]);     // close unnecessary file descriptor
+        //reset index
+        index = 0;
+        //used an idea from Martin Dimitrov's comment on 
+        //http://stackoverflow.com/questions/289347/using-strtok-with-a-stdstring
+        exec_command[index] = strtok(&output_command[0]," ");
+        while(exec_command[index] != NULL)
+        {
+            ++index;
+            exec_command[index] = strtok(NULL, " ");
+        }
+        execvp(exec_command[0], exec_command);
+        exit(1);
+    }
+    else
+    {
+        // parent process executes here
+        wpid = wait(&status);
+    }
+    
+}
+
+/*Parses the command string into the input section and output section of
+ * the piped commands.*/
+void parsePipedCommand(std::string cmd, std::string &input, std::string &output)
+{
+    int index;
+    
+    index = cmd.find_first_of("|");
+    if( index != std::string::npos)
+    {
+        input = cmd.substr(0, index);
+        output = cmd.substr(index + 2);
+    }
+}
+
 /*Parse the command line string cmd and place into null terminated
- * strings.*/
+ * strings. Not used because the char pointer array would not have
+ * the correct values after returning from this function.*/
 /*
 void parseCommand(std::string source, char* destination[100])
 {

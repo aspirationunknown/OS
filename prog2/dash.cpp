@@ -1,16 +1,21 @@
 /* File: dash.cpp
  * Program: dash - a specialized shell prompt, improved edition
  * Author: Charles Parsons
- * Date: 2/21/2015
+ * Date: 3/1/2015
  * Professor: Dr. Karlsson
  * Course: CSC 456 - Operating Systems
  * Location: M306
  * Time: MWThF 2:00pm - 2:50pm
  * 
- * Description: 
+ * Description: This program emulates a shell prompt. It allows for most of the
+ * common shell commands, including but not limited to: cndnm, systat, cd, 
+ * gcc/g++, ls, and piping. These commands perform as they are expected to 
+ * perform in a normal shell prompt. This program uses fork to created child 
+ * processes and execvp to call the functions to be run in those child 
+ * processes. 
  * 
- * To do: shell commands, pipes, redirects, exit leaves dash and not just
- * parent process.
+ * To do: redirects, signals, pid
+ * 
  */
 #include "commands.h"
 
